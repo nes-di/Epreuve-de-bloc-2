@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:AnnuaireEntreprise.ViewModels"
+             x:Class="AnnuaireEntreprise.Views.SalarieDetailPage"
+             Title="Détails du collaborateur">
+
+    <ContentPage.BindingContext>
+        <vm:SalarieDetailViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView Padding="20">
+        <VerticalStackLayout Spacing="20" HorizontalOptions="Center">
+            
+            <!-- Avatar fictif -->
+            <Border StrokeShape="RoundRectangle 60" HeightRequest="120" WidthRequest="120" BackgroundColor="#512BD4">
+                <Label Text="👤" FontSize="60" HorizontalOptions="Center" VerticalOptions="Center" />
+            </Border>
+
+            <Label Text="{Binding Salarie.NomComplet}" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
+            
+            <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                <!-- On remplace les Badge par des Border pour éviter les erreurs -->
+                <Border BackgroundColor="#2B3C51" Padding="10,5" StrokeShape="RoundRectangle 10">
+                    <Label Text="{Binding Salarie.Service.Nom}" TextColor="White" FontSize="12" />
+                </Border>
+                <Border BackgroundColor="#512BD4" Padding="10,5" StrokeShape="RoundRectangle 10">
+                    <Label Text="{Binding Salarie.Site.Ville}" TextColor="White" FontSize="12" />
+                </Border>
+            </HorizontalStackLayout>
+
+            <BoxView HeightRequest="1" Color="Gray" HorizontalOptions="Fill" />
+
+            <!-- Actions -->
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                <Button Grid.Column="0" Text="📞 Appeler" 
+                        Command="{Binding CallCommand}" 
+                        CommandParameter="{Binding Salarie.TelephonePortable}"
+                        BackgroundColor="#28A745" />
+                <Button Grid.Column="1" Text="✉️ Email" 
+                        Command="{Binding EmailCommand}" 
+                        CommandParameter="{Binding Salarie.Email}"
+                        BackgroundColor="#007BFF" />
+            </Grid>
+
+            <!-- Infos détaillées -->
+            <VerticalStackLayout Spacing="10" Margin="0,20">
+                <HorizontalStackLayout Spacing="5">
+                    <Label Text="📞 Fixe :" FontAttributes="Bold" />
+                    <Label Text="{Binding Salarie.TelephoneFixe}" />
+                </HorizontalStackLayout>
+                
+                <HorizontalStackLayout Spacing="5">
+                    <Label Text="📱 Portable :" FontAttributes="Bold" />
+                    <Label Text="{Binding Salarie.TelephonePortable}" />
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout Spacing="5">
+                    <Label Text="📧 Email :" FontAttributes="Bold" />
+                    <Label Text="{Binding Salarie.Email}" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -4,22 +4,28 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:AnnuaireEntreprise.Views"
+    xmlns:local="clr-namespace:AnnuaireEntreprise"
     Shell.FlyoutBehavior="Flyout"
-    Title="Annuaire Entreprise">
+    Title="Annuaire Entreprise"
+    x:Name="thisShell">
 
-    <!-- Menu Latéral (Flyout) -->
+    <!-- Menu Consultation -->
     <FlyoutItem Title="Consultation" Icon="dotnet_bot.png">
         <ShellContent 
             Title="Liste des Salariés" 
             ContentTemplate="{DataTemplate views:MainPage}" 
             Route="MainPage" />
-    </FlyoutItem>
-
-    <FlyoutItem Title="Administration" Icon="dotnet_bot.png">
+        
         <ShellContent 
             Title="Connexion" 
             ContentTemplate="{DataTemplate views:LoginPage}" 
             Route="LoginPage" />
+    </FlyoutItem>
+
+    <!-- Menu Administration (Visible uniquement si IsAdmin est vrai) -->
+    <FlyoutItem Title="Administration" 
+                Icon="dotnet_bot.png"
+                IsVisible="{Binding IsAdmin}">
         
         <ShellContent 
             Title="Gestion Salariés" 
@@ -35,6 +41,14 @@
             Title="Gestion Sites" 
             ContentTemplate="{DataTemplate views:SitesPage}" 
             Route="SitesPage" />
+    </FlyoutItem>
+
+    <!-- BOUTON DÉCONNEXION (Utilisation de FlyoutItem pour la stabilité) -->
+    <FlyoutItem Title="Déconnexion" 
+                Icon="dotnet_bot.png"
+                IsVisible="{Binding IsAdmin}"
+                Route="déconnexion_clic">
+        <ShellContent ContentTemplate="{DataTemplate views:MainPage}" />
     </FlyoutItem>
 
 </Shell>

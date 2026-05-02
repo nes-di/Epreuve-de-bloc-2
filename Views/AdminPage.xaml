@@ -1,8 +1,13 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:AnnuaireEntreprise.Models"
+             xmlns:vm="clr-namespace:AnnuaireEntreprise.ViewModels"
              x:Class="AnnuaireEntreprise.Views.AdminPage"
              Title="Gestion des Salariés">
+
+    <ContentPage.BindingContext>
+        <vm:AdminViewModel />
+    </ContentPage.BindingContext>
 
     <Grid RowDefinitions="Auto, *" Padding="20">
         
@@ -22,8 +27,14 @@
                             </VerticalStackLayout>
 
                             <HorizontalStackLayout Grid.Column="1" Spacing="10">
-                                <Button Text="✏️" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditCommand}" CommandParameter="{Binding .}" BackgroundColor="Transparent"/>
-                                <Button Text="🗑️" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteCommand}" CommandParameter="{Binding .}" BackgroundColor="Transparent"/>
+                                <Button Text="✏️" 
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditCommand}" 
+                                        CommandParameter="{Binding .}" 
+                                        BackgroundColor="Transparent"/>
+                                <Button Text="🗑️" 
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteCommand}" 
+                                        CommandParameter="{Binding .}" 
+                                        BackgroundColor="Transparent"/>
                             </HorizontalStackLayout>
                         </Grid>
                     </Frame>

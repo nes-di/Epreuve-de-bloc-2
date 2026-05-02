@@ -30,12 +30,32 @@ public class LoginViewModel : INotifyPropertyChanged
 
     private async Task ExecuterLogin()
     {
-        // Tu peux changer "admin123" par le mot de passe de ton choix
+        // Vérification du mot de passe (à adapter selon tes besoins)
         if (Password == "admin123") 
         {
             ErrorMessage = string.Empty;
-            // On navigue vers la future page d'admin
-            await Shell.Current.GoToAsync("//AdminPage"); 
+
+            // On récupère l'instance du Shell pour modifier son état
+            if (Shell.Current is AppShell shell)
+            {
+                // Crucial pour Windows : On effectue les changements UI sur le thread principal 
+                // pour éviter l'erreur de corruption mémoire (-1073741189)
+                MainThread.BeginInvokeOnMainThread(async () => 
+                {
+                    // 1. On active le mode Admin
+                    shell.IsAdmin = true; 
+                    
+                    // 2. On rafraîchit le menu (pour ajouter le bouton déconnexion)
+                    shell.RefreshMenu();
+
+                    // 3. On vide le champ pour la sécurité
+                    Password = string.Empty;
+
+                    // 4. On redirige vers l'administration
+                    // L'utilisation de "//" réinitialise la pile de navigation
+                    await Shell.Current.GoToAsync("//AdminPage"); 
+                });
+            }
         }
         else
         {
@@ -43,7 +63,9 @@ public class LoginViewModel : INotifyPropertyChanged
         }
     }
 
+    #region MVVM Standard
     public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged([CallerMemberName] string? name = null) =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    #endregion
 }

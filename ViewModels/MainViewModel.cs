@@ -35,7 +35,7 @@ namespace AnnuaireEntreprise.ViewModels
             }
         }
 
-        // État du rafraîchissement (le petit rond qui tourne)
+        // État du rafraîchissement
         public bool IsRefreshing
         {
             get => _isRefreshing;
@@ -44,30 +44,43 @@ namespace AnnuaireEntreprise.ViewModels
 
         // Commandes pour l'UI
         public ICommand RefreshCommand { get; }
+        public ICommand GoToDetailCommand { get; } // <-- NOUVEAU
 
         public MainViewModel()
         {
             _db = new AppDbContext();
+            
+            // Initialisation de la commande de rafraîchissement
             RefreshCommand = new Command(async () => await ChargerDonneesAsync());
+
+            // Initialisation de la commande de navigation vers le détail
+            GoToDetailCommand = new Command<Salarie>(async (salarie) =>
+            {
+                if (salarie == null) return;
+                
+                // On navigue vers la page de détail en passant l'ID
+                await Shell.Current.GoToAsync($"SalarieDetailPage?SalarieId={salarie.Id}");
+            });
             
             // Chargement initial
-            Task.Run(async () => await ChargerDonneesAsync());
+            _ = ChargerDonneesAsync();
         }
 
-        private async Task ChargerDonneesAsync()
+        // On le passe en public pour pouvoir l'appeler depuis le OnAppearing de la vue si besoin
+        public async Task ChargerDonneesAsync()
         {
+            if (IsRefreshing && Salaries.Count > 0) return; // Évite les doubles appels
+
             IsRefreshing = true;
 
             try
             {
-                // On récupère les salariés avec leurs relations (Join SQL)
                 var liste = await _db.Salaries
                     .Include(s => s.Service)
                     .Include(s => s.Site)
                     .OrderBy(s => s.Nom)
                     .ToListAsync();
 
-                // On met à jour l'UI sur le thread principal
                 MainThread.BeginInvokeOnMainThread(() => {
                     Salaries = new ObservableCollection<Salarie>(liste);
                 });

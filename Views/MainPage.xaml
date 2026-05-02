@@ -5,6 +5,11 @@
              x:Class="AnnuaireEntreprise.Views.MainPage"
              Title="Annuaire d'Entreprise - Visiteur">
 
+    <!-- Liaison avec le ViewModel -->
+    <ContentPage.BindingContext>
+        <viewmodels:MainViewModel />
+    </ContentPage.BindingContext>
+
     <Grid RowDefinitions="Auto, *" Padding="15">
         
         <!-- ZONE 1 : La barre de recherche -->
@@ -15,14 +20,19 @@
                        PlaceholderColor="Gray"/>
         </Frame>
 
-        <!-- ZONE 2 : L'affichage avec RefreshView pour le chargement -->
+        <!-- ZONE 2 : L'affichage avec RefreshView -->
         <RefreshView Grid.Row="1" 
                      IsRefreshing="{Binding IsRefreshing}" 
                      Command="{Binding RefreshCommand}"
                      RefreshColor="#569CD6">
             
+            <!-- AJOUT ICI : SelectionMode et les Commands pour le clic -->
             <CollectionView ItemsSource="{Binding Salaries}"
-                            EmptyView="Aucun salarié trouvé.">
+                            EmptyView="Aucun salarié trouvé."
+                            SelectionMode="Single"
+                            SelectionChangedCommand="{Binding GoToDetailCommand}"
+                            SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
+                
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Salarie">
                         
