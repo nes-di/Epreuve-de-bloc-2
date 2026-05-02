@@ -1,0 +1,8 @@
+[Oo]bj/
+[Bb]in/
+*.user
+.vs/
+.vscode/
+*.db
+bin/
+obj/

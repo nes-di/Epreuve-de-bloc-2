@@ -1,0 +1,61 @@
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:AnnuaireEntreprise.ViewModels"
+             xmlns:models="clr-namespace:AnnuaireEntreprise.Models"
+             x:Class="AnnuaireEntreprise.Views.MainPage"
+             Title="Annuaire d'Entreprise - Visiteur">
+
+    <Grid RowDefinitions="Auto, *" Padding="15">
+        
+        <!-- ZONE 1 : La barre de recherche -->
+        <Frame Grid.Row="0" Margin="0,0,0,15" Padding="0" CornerRadius="10" BackgroundColor="#2D2D30" BorderColor="#3E3E42">
+            <SearchBar Placeholder="Rechercher par nom ou prénom..."
+                       Text="{Binding RechercheTexte}" 
+                       TextColor="White"
+                       PlaceholderColor="Gray"/>
+        </Frame>
+
+        <!-- ZONE 2 : L'affichage avec RefreshView pour le chargement -->
+        <RefreshView Grid.Row="1" 
+                     IsRefreshing="{Binding IsRefreshing}" 
+                     Command="{Binding RefreshCommand}"
+                     RefreshColor="#569CD6">
+            
+            <CollectionView ItemsSource="{Binding Salaries}"
+                            EmptyView="Aucun salarié trouvé.">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Salarie">
+                        
+                        <!-- Design de la "Fiche Salarié" -->
+                        <Frame Margin="0,0,0,10" Padding="15" CornerRadius="8" BackgroundColor="#1E1E1E" BorderColor="#333333">
+                            <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto">
+                                
+                                <!-- Nom et Prénom -->
+                                <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="5" Margin="0,0,0,5">
+                                    <Label Text="{Binding Nom}" FontAttributes="Bold" FontSize="18" TextColor="White" TextTransform="Uppercase"/>
+                                    <Label Text="{Binding Prenom}" FontAttributes="Bold" FontSize="18" TextColor="White"/>
+                                </HorizontalStackLayout>
+
+                                <!-- Service et Site -->
+                                <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Spacing="10" Margin="0,0,0,10">
+                                    <Label Text="{Binding Service.Nom, StringFormat='🏢 {0}'}" FontSize="13" TextColor="#A9A9A9"/>
+                                    <Label Text="{Binding Site.Ville, StringFormat='📍 {0}'}" FontSize="13" TextColor="#A9A9A9"/>
+                                </HorizontalStackLayout>
+
+                                <!-- Contacts -->
+                                <VerticalStackLayout Grid.Row="2" Grid.Column="0" Spacing="2">
+                                    <Label Text="{Binding TelephoneFixe, StringFormat='📞 Fixe : {0}'}" FontSize="13" TextColor="#D3D3D3"/>
+                                    <Label Text="{Binding TelephonePortable, StringFormat='📱 Port : {0}'}" FontSize="13" TextColor="#D3D3D3"/>
+                                    <Label Text="{Binding Email, StringFormat='✉️ {0}'}" FontSize="13" TextColor="#569CD6"/>
+                                </VerticalStackLayout>
+
+                            </Grid>
+                        </Frame>
+                        
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+        
+    </Grid>
+</ContentPage>
