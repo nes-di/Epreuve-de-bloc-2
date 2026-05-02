@@ -1,0 +1,39 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:AnnuaireEntreprise.ViewModels"
+             xmlns:models="clr-namespace:AnnuaireEntreprise.Models"
+             x:Class="AnnuaireEntreprise.Views.ServicesPage"
+             Title="Gestion des Services">
+
+    <ContentPage.BindingContext>
+        <vm:ServicesViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto, *" Padding="20" RowSpacing="15">
+        
+        <!-- Formulaire d'ajout rapide -->
+        <HorizontalStackLayout Grid.Row="0" Spacing="10">
+            <Entry Placeholder="Nom du nouveau service" 
+                   Text="{Binding NouveauNom}" 
+                   WidthRequest="250" />
+            <Button Text="Ajouter" 
+                    Command="{Binding AddCommand}" 
+                    BackgroundColor="#28A745" />
+        </HorizontalStackLayout>
+
+        <!-- Liste des services -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Services}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Service">
+                    <Grid ColumnDefinitions="*, Auto" Padding="10">
+                        <Label Text="{Binding Nom}" VerticalOptions="Center" FontSize="16" />
+                        <Button Grid.Column="1" Text="🗑️" 
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ServicesViewModel}}, Path=DeleteCommand}" 
+                                CommandParameter="{Binding .}"
+                                BackgroundColor="Transparent" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

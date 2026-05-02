@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using AnnuaireEntreprise.Models;
 using AnnuaireEntreprise.Data;
+using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
 namespace AnnuaireEntreprise.ViewModels

@@ -1,0 +1,33 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:AnnuaireEntreprise.ViewModels"
+             x:Class="AnnuaireEntreprise.Views.SalarieFormPage"
+             Title="Fiche Salarié">
+
+    <ContentPage.BindingContext>
+        <vm:SalarieFormViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView Padding="20">
+        <VerticalStackLayout Spacing="15">
+            <Entry Placeholder="Nom" Text="{Binding SalarieCourant.Nom}" />
+            <Entry Placeholder="Prénom" Text="{Binding SalarieCourant.Prenom}" />
+            <Entry Placeholder="Email" Text="{Binding SalarieCourant.Email}" Keyboard="Email" />
+            <Entry Placeholder="Téléphone Fixe" Text="{Binding SalarieCourant.TelephoneFixe}" Keyboard="Telephone" />
+            <Entry Placeholder="Téléphone Portable" Text="{Binding SalarieCourant.TelephonePortable}" Keyboard="Telephone" />
+
+            <Label Text="Service :" FontAttributes="Bold" />
+            <Picker ItemsSource="{Binding Services}" 
+                    ItemDisplayBinding="{Binding Nom}" 
+                    SelectedItem="{Binding SelectedService}" />
+
+            <Label Text="Site :" FontAttributes="Bold" />
+            <Picker ItemsSource="{Binding Sites}" 
+                    ItemDisplayBinding="{Binding Ville}" 
+                    SelectedItem="{Binding SelectedSite}" />
+
+            <Button Text="Enregistrer" Command="{Binding SaveCommand}" 
+                    BackgroundColor="#28A745" TextColor="White" Margin="0,20" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

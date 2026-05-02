@@ -11,8 +11,10 @@ public partial class App : Application
     {
         InitializeComponent();
 
+        // FORCE l'utilisation du Shell comme page principale
+        MainPage = new AppShell();
+
         // On lance le remplissage de la base de données en tâche de fond
-        // pour ne pas bloquer l'affichage de l'application
         Task.Run(async () => 
         {
             using var db = new AppDbContext();
@@ -22,6 +24,7 @@ public partial class App : Application
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        return new Window(new AppShell());
+        // On s'assure que la fenêtre utilise bien le Shell défini plus haut
+        return new Window(MainPage);
     }
 }
