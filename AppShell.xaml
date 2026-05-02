@@ -11,4 +11,9 @@
         ContentTemplate="{DataTemplate views:MainPage}"
         Route="MainPage" />
 
+    <ShellContent
+        Title="Administration"
+        ContentTemplate="{DataTemplate views:AdminPage}"
+        Route="AdminPage" />
+
 </Shell>
