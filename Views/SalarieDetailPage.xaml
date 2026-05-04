@@ -60,6 +60,13 @@
                     <Label Text="{Binding Salarie.Email}" />
                 </HorizontalStackLayout>
             </VerticalStackLayout>
+            
+            <!-- NOUVEAU : Bouton pour générer le PDF -->
+            <Button Text="📄 Générer la fiche PDF" 
+                    Command="{Binding GeneratePdfCommand}" 
+                    BackgroundColor="#DC3545" 
+                    TextColor="White" 
+                    Margin="0,20,0,0" />
 
         </VerticalStackLayout>
     </ScrollView>

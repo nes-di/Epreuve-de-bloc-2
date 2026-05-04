@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using AnnuaireEntreprise.Services;
 
 namespace AnnuaireEntreprise.ViewModels;
 
@@ -30,29 +31,20 @@ public class LoginViewModel : INotifyPropertyChanged
 
     private async Task ExecuterLogin()
     {
-        // Vérification du mot de passe (à adapter selon tes besoins)
         if (Password == "admin123") 
         {
             ErrorMessage = string.Empty;
+            
+            // On enregistre le log de succès
+            LoggerService.Log("Succès : Connexion au mode Administrateur.");
 
-            // On récupère l'instance du Shell pour modifier son état
             if (Shell.Current is AppShell shell)
             {
-                // Crucial pour Windows : On effectue les changements UI sur le thread principal 
-                // pour éviter l'erreur de corruption mémoire (-1073741189)
                 MainThread.BeginInvokeOnMainThread(async () => 
                 {
-                    // 1. On active le mode Admin
                     shell.IsAdmin = true; 
-                    
-                    // 2. On rafraîchit le menu (pour ajouter le bouton déconnexion)
                     shell.RefreshMenu();
-
-                    // 3. On vide le champ pour la sécurité
                     Password = string.Empty;
-
-                    // 4. On redirige vers l'administration
-                    // L'utilisation de "//" réinitialise la pile de navigation
                     await Shell.Current.GoToAsync("//AdminPage"); 
                 });
             }
@@ -60,12 +52,13 @@ public class LoginViewModel : INotifyPropertyChanged
         else
         {
             ErrorMessage = "Mot de passe incorrect !";
+            
+            // On enregistre le log d'erreur
+            LoggerService.Log($"Erreur : Tentative de connexion admin échouée avec le mot de passe '{Password}'.");
         }
     }
 
-    #region MVVM Standard
     public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged([CallerMemberName] string? name = null) =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    #endregion
 }

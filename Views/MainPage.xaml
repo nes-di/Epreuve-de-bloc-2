@@ -5,14 +5,12 @@
              x:Class="AnnuaireEntreprise.Views.MainPage"
              Title="Annuaire d'Entreprise - Visiteur">
 
-    <!-- Liaison avec le ViewModel -->
     <ContentPage.BindingContext>
         <viewmodels:MainViewModel />
     </ContentPage.BindingContext>
 
-    <Grid RowDefinitions="Auto, *" Padding="15">
+    <Grid RowDefinitions="Auto, Auto, *" Padding="15">
         
-        <!-- ZONE 1 : La barre de recherche -->
         <Frame Grid.Row="0" Margin="0,0,0,15" Padding="0" CornerRadius="10" BackgroundColor="#2D2D30" BorderColor="#3E3E42">
             <SearchBar Placeholder="Rechercher par nom ou prénom..."
                        Text="{Binding RechercheTexte}" 
@@ -20,52 +18,36 @@
                        PlaceholderColor="Gray"/>
         </Frame>
 
-        <!-- ZONE 2 : L'affichage avec RefreshView -->
-        <RefreshView Grid.Row="1" 
-                     IsRefreshing="{Binding IsRefreshing}" 
-                     Command="{Binding RefreshCommand}"
-                     RefreshColor="#569CD6">
-            
-            <!-- AJOUT ICI : SelectionMode et les Commands pour le clic -->
-            <CollectionView ItemsSource="{Binding Salaries}"
-                            EmptyView="Aucun salarié trouvé."
-                            SelectionMode="Single"
-                            SelectionChangedCommand="{Binding GoToDetailCommand}"
-                            SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
-                
+        <HorizontalStackLayout Grid.Row="1" Spacing="10" Margin="0,0,0,15" HorizontalOptions="FillAndExpand">
+            <Picker Title="📍 Tous les Sites" ItemsSource="{Binding Sites}" ItemDisplayBinding="{Binding Ville}" SelectedItem="{Binding SelectedSite}" TextColor="White" TitleColor="Gray" BackgroundColor="#2D2D30" HorizontalOptions="FillAndExpand" WidthRequest="150" />
+            <Picker Title="🏢 Tous les Services" ItemsSource="{Binding Services}" ItemDisplayBinding="{Binding Nom}" SelectedItem="{Binding SelectedService}" TextColor="White" TitleColor="Gray" BackgroundColor="#2D2D30" HorizontalOptions="FillAndExpand" WidthRequest="150" />
+            <Button Text="🔄" Command="{Binding ResetFiltersCommand}" BackgroundColor="Transparent" TextColor="White" BorderColor="#3E3E42" BorderWidth="1" CornerRadius="10" WidthRequest="45" />
+        </HorizontalStackLayout>
+
+        <RefreshView Grid.Row="2" IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}" RefreshColor="#569CD6">
+            <CollectionView ItemsSource="{Binding Salaries}" EmptyView="Aucun salarié trouvé." SelectionMode="Single" SelectionChangedCommand="{Binding GoToDetailCommand}" SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Salarie">
-                        
-                        <!-- Design de la "Fiche Salarié" -->
                         <Frame Margin="0,0,0,10" Padding="15" CornerRadius="8" BackgroundColor="#1E1E1E" BorderColor="#333333">
                             <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto">
-                                
-                                <!-- Nom et Prénom -->
                                 <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="5" Margin="0,0,0,5">
                                     <Label Text="{Binding Nom}" FontAttributes="Bold" FontSize="18" TextColor="White" TextTransform="Uppercase"/>
                                     <Label Text="{Binding Prenom}" FontAttributes="Bold" FontSize="18" TextColor="White"/>
                                 </HorizontalStackLayout>
-
-                                <!-- Service et Site -->
                                 <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Spacing="10" Margin="0,0,0,10">
                                     <Label Text="{Binding Service.Nom, StringFormat='🏢 {0}'}" FontSize="13" TextColor="#A9A9A9"/>
                                     <Label Text="{Binding Site.Ville, StringFormat='📍 {0}'}" FontSize="13" TextColor="#A9A9A9"/>
                                 </HorizontalStackLayout>
-
-                                <!-- Contacts -->
                                 <VerticalStackLayout Grid.Row="2" Grid.Column="0" Spacing="2">
                                     <Label Text="{Binding TelephoneFixe, StringFormat='📞 Fixe : {0}'}" FontSize="13" TextColor="#D3D3D3"/>
                                     <Label Text="{Binding TelephonePortable, StringFormat='📱 Port : {0}'}" FontSize="13" TextColor="#D3D3D3"/>
                                     <Label Text="{Binding Email, StringFormat='✉️ {0}'}" FontSize="13" TextColor="#569CD6"/>
                                 </VerticalStackLayout>
-
                             </Grid>
                         </Frame>
-                        
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
         </RefreshView>
-        
     </Grid>
 </ContentPage>

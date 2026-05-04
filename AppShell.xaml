@@ -9,46 +9,26 @@
     Title="Annuaire Entreprise"
     x:Name="thisShell">
 
-    <!-- Menu Consultation -->
     <FlyoutItem Title="Consultation" Icon="dotnet_bot.png">
         <ShellContent 
             Title="Liste des Salariés" 
             ContentTemplate="{DataTemplate views:MainPage}" 
             Route="MainPage" />
-        
-        <ShellContent 
-            Title="Connexion" 
-            ContentTemplate="{DataTemplate views:LoginPage}" 
-            Route="LoginPage" />
     </FlyoutItem>
 
-    <!-- Menu Administration (Visible uniquement si IsAdmin est vrai) -->
     <FlyoutItem Title="Administration" 
                 Icon="dotnet_bot.png"
                 IsVisible="{Binding IsAdmin}">
         
-        <ShellContent 
-            Title="Gestion Salariés" 
-            ContentTemplate="{DataTemplate views:AdminPage}" 
-            Route="AdminPage" />
-
-        <ShellContent 
-            Title="Gestion Services" 
-            ContentTemplate="{DataTemplate views:ServicesPage}" 
-            Route="ServicesPage" />
-
-        <ShellContent 
-            Title="Gestion Sites" 
-            ContentTemplate="{DataTemplate views:SitesPage}" 
-            Route="SitesPage" />
+        <ShellContent Title="Gestion Salariés" ContentTemplate="{DataTemplate views:AdminPage}" Route="AdminPage" />
+        <ShellContent Title="Gestion Services" ContentTemplate="{DataTemplate views:ServicesPage}" Route="ServicesPage" />
+        <ShellContent Title="Gestion Sites" ContentTemplate="{DataTemplate views:SitesPage}" Route="SitesPage" />
     </FlyoutItem>
 
-    <!-- BOUTON DÉCONNEXION (Utilisation de FlyoutItem pour la stabilité) -->
     <FlyoutItem Title="Déconnexion" 
                 Icon="dotnet_bot.png"
                 IsVisible="{Binding IsAdmin}"
                 Route="déconnexion_clic">
         <ShellContent ContentTemplate="{DataTemplate views:MainPage}" />
     </FlyoutItem>
-
 </Shell>

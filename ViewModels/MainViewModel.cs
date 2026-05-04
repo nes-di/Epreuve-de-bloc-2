@@ -1,124 +1,72 @@
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using AnnuaireEntreprise.Models;
 using AnnuaireEntreprise.Data;
-using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
 namespace AnnuaireEntreprise.ViewModels
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel : BindableObject
     {
         private readonly AppDbContext _db;
         private ObservableCollection<Salarie> _salaries = new();
-        private string _rechercheTexte = string.Empty;
+        private ObservableCollection<Site> _sites = new();
+        private ObservableCollection<Service> _services = new();
         private bool _isRefreshing;
+        private string _rechercheTexte = string.Empty;
+        private Site _selectedSite;
+        private Service _selectedService;
 
-        // Liste des salariés affichés à l'écran
-        public ObservableCollection<Salarie> Salaries
-        {
-            get => _salaries;
-            set { _salaries = value; OnPropertyChanged(); }
-        }
+        public ObservableCollection<Salarie> Salaries { get => _salaries; set { _salaries = value; OnPropertyChanged(); } }
+        public ObservableCollection<Site> Sites { get => _sites; set { _sites = value; OnPropertyChanged(); } }
+        public ObservableCollection<Service> Services { get => _services; set { _services = value; OnPropertyChanged(); } }
+        public bool IsRefreshing { get => _isRefreshing; set { _isRefreshing = value; OnPropertyChanged(); } }
+        
+        public string RechercheTexte { get => _rechercheTexte; set { _rechercheTexte = value; OnPropertyChanged(); FiltrerSalaries(); } }
+        public Site SelectedSite { get => _selectedSite; set { _selectedSite = value; OnPropertyChanged(); FiltrerSalaries(); } }
+        public Service SelectedService { get => _selectedService; set { _selectedService = value; OnPropertyChanged(); FiltrerSalaries(); } }
 
-        // Texte de la barre de recherche
-        public string RechercheTexte
-        {
-            get => _rechercheTexte;
-            set 
-            { 
-                _rechercheTexte = value; 
-                OnPropertyChanged(); 
-                FiltrerSalaries(); 
-            }
-        }
-
-        // État du rafraîchissement
-        public bool IsRefreshing
-        {
-            get => _isRefreshing;
-            set { _isRefreshing = value; OnPropertyChanged(); }
-        }
-
-        // Commandes pour l'UI
         public ICommand RefreshCommand { get; }
-        public ICommand GoToDetailCommand { get; } // <-- NOUVEAU
+        public ICommand GoToDetailCommand { get; }
+        public ICommand ResetFiltersCommand { get; }
+        public ICommand OpenHiddenLoginCommand { get; } // <-- Commande ajoutée
 
         public MainViewModel()
         {
             _db = new AppDbContext();
-            
-            // Initialisation de la commande de rafraîchissement
             RefreshCommand = new Command(async () => await ChargerDonneesAsync());
-
-            // Initialisation de la commande de navigation vers le détail
-            GoToDetailCommand = new Command<Salarie>(async (salarie) =>
-            {
-                if (salarie == null) return;
-                
-                // On navigue vers la page de détail en passant l'ID
-                await Shell.Current.GoToAsync($"SalarieDetailPage?SalarieId={salarie.Id}");
-            });
+            GoToDetailCommand = new Command<Salarie>(async (s) => await Shell.Current.GoToAsync($"SalarieDetailPage?SalarieId={s.Id}"));
+            ResetFiltersCommand = new Command(() => { RechercheTexte = string.Empty; SelectedSite = null; SelectedService = null; _ = ChargerDonneesAsync(); });
             
-            // Chargement initial
+            // <-- Initialisation de la commande pour le raccourci
+            OpenHiddenLoginCommand = new Command(async () => await Shell.Current.GoToAsync("LoginPage")); 
+            
             _ = ChargerDonneesAsync();
         }
 
-        // On le passe en public pour pouvoir l'appeler depuis le OnAppearing de la vue si besoin
         public async Task ChargerDonneesAsync()
         {
-            if (IsRefreshing && Salaries.Count > 0) return; // Évite les doubles appels
-
             IsRefreshing = true;
-
-            try
-            {
-                var liste = await _db.Salaries
-                    .Include(s => s.Service)
-                    .Include(s => s.Site)
-                    .OrderBy(s => s.Nom)
-                    .ToListAsync();
-
-                MainThread.BeginInvokeOnMainThread(() => {
-                    Salaries = new ObservableCollection<Salarie>(liste);
-                });
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"[Erreur] Impossible de charger les données : {ex.Message}");
-            }
-            finally
-            {
-                IsRefreshing = false;
-            }
+            var listeSalaries = await _db.Salaries.Include(s => s.Service).Include(s => s.Site).OrderBy(s => s.Nom).ToListAsync();
+            MainThread.BeginInvokeOnMainThread(() => {
+                Salaries = new ObservableCollection<Salarie>(listeSalaries);
+                Sites = new ObservableCollection<Site>(_db.Sites.OrderBy(s => s.Ville).ToList());
+                Services = new ObservableCollection<Service>(_db.Services.OrderBy(s => s.Nom).ToList());
+            });
+            IsRefreshing = false;
         }
 
         private void FiltrerSalaries()
         {
-            if (string.IsNullOrWhiteSpace(RechercheTexte))
-            {
-                _ = ChargerDonneesAsync();
-                return;
-            }
+            var query = _db.Salaries.Include(s => s.Service).Include(s => s.Site).AsQueryable();
 
-            var filtre = RechercheTexte.ToLower();
-            var resultats = _db.Salaries
-                .Include(s => s.Service)
-                .Include(s => s.Site)
-                .Where(s => s.Nom.ToLower().Contains(filtre) || 
-                            s.Prenom.ToLower().Contains(filtre))
-                .ToList();
+            if (!string.IsNullOrWhiteSpace(RechercheTexte))
+                query = query.Where(s => s.Nom.ToLower().Contains(RechercheTexte.ToLower()) || s.Prenom.ToLower().Contains(RechercheTexte.ToLower()));
+            
+            if (SelectedSite != null) query = query.Where(s => s.SiteId == SelectedSite.Id);
+            if (SelectedService != null) query = query.Where(s => s.ServiceId == SelectedService.Id);
 
-            Salaries = new ObservableCollection<Salarie>(resultats);
-        }
-
-        // Logique MVVM standard
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            Salaries = new ObservableCollection<Salarie>(query.OrderBy(s => s.Nom).ToList());
         }
     }
 }
