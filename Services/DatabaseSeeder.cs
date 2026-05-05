@@ -22,7 +22,6 @@ namespace AnnuaireEntreprise.Services
         {
             await InitialiserServices(db);
             var services = db.Services.ToList();
-
             using HttpClient client = new HttpClient();
             string json = await client.GetStringAsync("https://randomuser.me/api/?results=10&nat=fr");
 
